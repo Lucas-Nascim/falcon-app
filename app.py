@@ -13,6 +13,28 @@ filtro = st.sidebar.selectbox("Tipo do Documento", falcon_data['TipoDoDocumento'
 # Filtrar dados conforme escolha
 filtrado = falcon_data[falcon_data['TipoDoDocumento'] == filtro]
 
+# ===================================================
+# TABELAS
+# ===================================================
+
+col_t1, col_t2 = st.columns(2)
+
+with col_t1:
+    st.subheader("Tabela - Status")
+    contagem_status = filtrado['Status'].value_counts().reset_index()
+    contagem_status.columns = ['Status', 'Quantidade']
+    contagem_status['Percentual'] = (contagem_status['Quantidade'] / contagem_status['Quantidade'].sum()) * 100
+    contagem_status['Percentual'] = contagem_status['Percentual'].round(2)
+    st.dataframe(contagem_status)
+
+with col_t2:
+    st.subheader("Tabela - Fila")
+    contagem_fila = filtrado['Fila'].value_counts().reset_index()
+    contagem_fila.columns = ['Fila', 'Quantidade']
+    contagem_fila['Percentual'] = (contagem_fila['Quantidade'] / contagem_fila['Quantidade'].sum()) * 100
+    contagem_fila['Percentual'] = contagem_fila['Percentual'].round(2)
+    st.dataframe(contagem_fila)
+
 # Layout
 col1, col2 = st.columns(2)
 
