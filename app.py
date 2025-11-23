@@ -17,6 +17,7 @@ filtrado = falcon_data[falcon_data['TipoDoDocumento'] == filtro]
 # TABELAS
 # ===================================================
 
+# Definir colunas lado a lado para tabelas ( layout pagina )
 col_t1, col_t2 = st.columns(2)
 
 with col_t1:
@@ -35,7 +36,7 @@ with col_t2:
     contagem_fila['Percentual'] = contagem_fila['Percentual'].round(2)
     st.dataframe(contagem_fila)
 
-# Layout
+# Layout para gráficos lado a lado
 col1, col2 = st.columns(2)
 
 # ===========================
@@ -53,7 +54,7 @@ grafico_status = px.bar(
     color_discrete_sequence=["#853def"]  # cor das barras
 )
 
-# --- estilização do texto ---
+# Estilização do texto
 grafico_status.update_layout(
     title_font_color="white",
     xaxis=dict(
@@ -66,33 +67,7 @@ grafico_status.update_layout(
     )
 )
 
-# --- estilização do texto ---
-grafico_status.update_layout(
-    title_font_color="white",
-    xaxis=dict(
-        title_font_color="white",
-        tickfont=dict(color="white")
-    ),
-    yaxis=dict(
-        title_font_color="white",
-        tickfont=dict(color="white")
-    )
-)
-
-# --- estilização do texto ---
-grafico_status.update_layout(
-    title_font_color="white",
-    xaxis=dict(
-        title_font_color="white",
-        tickfont=dict(color="white")
-    ),
-    yaxis=dict(
-        title_font_color="white",
-        tickfont=dict(color="white")
-    )
-)
-
-# --- deixar rótulos (text) em negrito ---
+# Deixar rótulos (text) em negrito ---
 grafico_status.update_traces(
     textfont=dict(
         size=14,
@@ -101,7 +76,7 @@ grafico_status.update_traces(
     )
 )
 
-# aplicar <b>...</b> aos valores dos rótulos
+# Aplicar <b>...</b> aos valores dos rótulos
 grafico_status.for_each_trace(
     lambda t: t.update(text=[f"<b>{int(float(v))}</b>" for v in t.text])
 )
@@ -123,7 +98,7 @@ grafico_fila = px.bar(
     color_discrete_sequence=["#853def"]  # cor das barras
 )
 
-# --- estilização do texto ---
+# Estilização do texto
 grafico_fila.update_layout(
     title_font_color="white",
     xaxis=dict(
@@ -136,7 +111,7 @@ grafico_fila.update_layout(
     )
 )
 
-# --- deixar rótulos (text) em negrito ---
+# Deixar rótulos (text) em negrito ---
 grafico_fila.update_traces(
     textfont=dict(
         size=14,
@@ -145,7 +120,7 @@ grafico_fila.update_traces(
     )
 )
 
-# aplicar <b>...</b> aos valores dos rótulos
+# Aplicar <b>...</b> aos valores dos rótulos
 grafico_fila.for_each_trace(
     lambda t: t.update(text=[f"<b>{int(float(v))}</b>" for v in t.text])
 )
