@@ -129,7 +129,3 @@ grafico_fila.for_each_trace(
 )
 
 col2.plotly_chart(grafico_fila, use_container_width=True)
-
-
-st.subheader("Tabela geral")
-filtrado
