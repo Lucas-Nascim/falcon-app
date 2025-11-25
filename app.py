@@ -4,7 +4,7 @@ import plotly.express as px
 
 st.set_page_config(layout="wide")
 
-# Dados
+# Dados da base Falcon
 falcon_data = falcon.df
 
 # Filtro lateral
