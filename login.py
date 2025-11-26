@@ -43,6 +43,6 @@ with st.form('login_form'):
 # Chamando a função de validação ao enviar o formulário
 if enviar:
     validacao_login(nome_usuario, senha_usuario)
-# Botao criar conta fora do form para evitar conflito de submit
+# Botao criar conta fora do form para evitar conflito de envio
 criar_conta = st.button(label="Criar uma conta", type="secondary", use_container_width=True,
                         help="Clique para criar uma nova conta")
