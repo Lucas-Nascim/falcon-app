@@ -1,48 +1,85 @@
 import streamlit as st
+import json
 
 
-@st.dialog('Aviso de Login')
-# Função para validar o login
+def carregar_credenciais():
+    """Carrega as credenciais do arquivo credenciais.json"""
+    try:
+        with open('credenciais.json', 'r', encoding='utf-8') as f:
+            dados = json.load(f)
+            email = dados.get('email', '')
+            senha = dados.get('senha', '')
+            return email, senha
+    except Exception as e:
+        st.error(f"Erro ao carregar credenciais: {e}")
+        return None, None
+
+
 def validacao_login(usr, passw):
-    # Aqui você pode adicionar a lógica de validação, como verificar contra um banco de dados
+    """Valida o login contra as credenciais"""
     if usr == '' or passw == '':
         st.error("Por favor, preencha todos os campos.")
-    else:
+        return False
+
+    email_correto, senha_correta = carregar_credenciais()
+
+    # Debug: descomente para inspecionar
+    # st.write(f"Email lido: '{email_correto}' | Senha lida: '{senha_correta}'")
+    # st.write(f"Email digitado: '{usr}' | Senha digitada: '{passw}'")
+
+    if email_correto is None or senha_correta is None:
+        st.error("Erro ao ler credenciais. Verifique credenciais.json")
+        return False
+
+    if usr == email_correto and passw == senha_correta:
+        st.session_state.autenticado = True
         st.success("Login realizado com sucesso!")
+        st.rerun()
+        return True
+    else:
+        st.error("Email ou senha incorretos!")
+        return False
 
 
-# Configuração da página
-with st.form('login_form'):
-    # Definindo o título e a legenda da página de login
-    st.title("Fazer login")
-    st.caption("Informe seu usuario e senha para acessar.")
+def tela_login():
+    """Renderiza a tela de login mais agradável e centralizada"""
+    st.markdown(
+        """
+        <style>
+        .login-card {
+            background: linear-gradient(135deg,#1f2937 0%, #111827 100%);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+            color: #fff;
+        }
+        .login-title { font-size:24px; margin-bottom:6px; color:#fff }
+        .login-caption { color: #cbd5e1; margin-bottom:12px }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    # Adicionando um divisor visual entre o título e os campos de entrada
-    st.divider()
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        with st.container():
+            st.markdown("<div class='login-card'>", unsafe_allow_html=True)
+            st.markdown("<div class='login-title'>Acesse sua conta</div>", unsafe_allow_html=True)
+            st.markdown("<div class='login-caption'>Informe seu email e senha</div>", unsafe_allow_html=True)
 
-    # Campos de entrada para nome de usuário e senha
-    nome_usuario = st.text_input("Nome de Usuário")
-    senha_usuario = st.text_input("Senha", type="password")
-    # Botão de envio do formulário
-    enviar = st.form_submit_button(
-        label="Entrar", type="primary", use_container_width=True, help="Clique para fazer login")
-    # Fazer login com Google
-    # Para adicionar um icone, voce pode usar o material icons do google adicionando o parametro icon="" no botao
-    google_btn = st.form_submit_button(
-        label="Fazer login com google", type="secondary", use_container_width=True, help="Clique para fazer login")
+            with st.form('login_form'):
+                nome_usuario = st.text_input("Email", placeholder="seu@email.com")
+                senha_usuario = st.text_input("Senha", type="password", placeholder="••••••••")
 
-    # Adicionando opções adicionais em colunas, deixando mais organizado um lado do outro
-    col_1, col_2 = st.columns(2)
-    with col_1:
-        # Box para salvar a senha
-        salvar_senha = st.checkbox("Salvar senha")
-    with col_2:
-        # Link para recuperação de senha
-        esqueceu_senha = st.html('<a href="#">Esqueceu a senha?</a>')
+                col_a, col_b = st.columns([1, 1])
+                with col_a:
+                    salvar_senha = st.checkbox("Salvar senha")
+                with col_b:
+                    st.markdown('[Esqueceu a senha?](#)')
 
-# Chamando a função de validação ao enviar o formulário
-if enviar:
-    validacao_login(nome_usuario, senha_usuario)
-# Botao criar conta fora do form para evitar conflito de envio
-criar_conta = st.button(label="Criar uma conta", type="secondary", use_container_width=True,
-                        help="Clique para criar uma nova conta")
+                enviar = st.form_submit_button(
+                    label="Entrar", type="primary", use_container_width=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+
+            if enviar:
+                validacao_login(nome_usuario, senha_usuario)
