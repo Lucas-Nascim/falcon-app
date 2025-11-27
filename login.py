@@ -1,26 +1,62 @@
 import streamlit as st
 import json
 import os
+from json import JSONDecodeError
 
 
 def carregar_credenciais():
-    """Retorna lista de credenciais a partir de credenciais.json"""
+    """
+    Retorna lista de credenciais no formato:
+    [ {"email": "...", "senha": "..."}, ... ]
+    Aceita:
+     - arquivo contendo uma lista de objetos
+     - arquivo contendo um único objeto
+     - arquivo contendo {"users": [...]}
+    """
+    path = "credenciais.json"
+    if not os.path.exists(path):
+        st.error("Arquivo credenciais.json não encontrado.")
+        return None
+
     try:
-        path = "credenciais.json"
-        if not os.path.exists(path):
-            st.error("Arquivo credenciais.json não encontrado.")
-            return None
         with open(path, "r", encoding="utf-8") as f:
             dados = json.load(f)
-            if isinstance(dados, list):
-                return dados
-            if isinstance(dados, dict):
-                return [dados]
-            st.error("Formato inválido em credenciais.json (esperado lista ou objeto).")
-            return None
-    except Exception as e:
-        st.error(f"Erro ao carregar credenciais: {e}")
+    except JSONDecodeError as e:
+        st.error(f"credenciais.json inválido: {e}")
         return None
+    except Exception as e:
+        st.error(f"Erro ao abrir credenciais.json: {e}")
+        return None
+
+    # Se vier um dicionário com chave "users"
+    if isinstance(dados, dict):
+        if "users" in dados and isinstance(dados["users"], list):
+            return dados["users"]
+        # se for um único par email/senha
+        if "email" in dados and "senha" in dados:
+            return [dados]
+        st.error("Formato inválido em credenciais.json (dicionário sem 'email'/'senha').")
+        return None
+
+    # Se já for uma lista
+    if isinstance(dados, list):
+        # validar itens
+        usuarios_validos = []
+        for i, item in enumerate(dados):
+            if not isinstance(item, dict):
+                st.warning(f"Ignorando item {i} em credenciais.json: não é um objeto")
+                continue
+            if "email" in item and "senha" in item:
+                usuarios_validos.append(item)
+            else:
+                st.warning(f"Ignorando item {i} em credenciais.json: falta 'email' ou 'senha'")
+        if not usuarios_validos:
+            st.error("Nenhuma credencial válida encontrada em credenciais.json.")
+            return None
+        return usuarios_validos
+
+    st.error("Formato inválido em credenciais.json (esperado lista ou objeto).")
+    return None
 
 
 def validacao_login(usr, passw):
@@ -31,9 +67,13 @@ def validacao_login(usr, passw):
 
     credenciais = carregar_credenciais()
     if not credenciais:
+        st.error("Erro ao ler credenciais. Verifique credenciais.json")
         return False
 
     for c in credenciais:
+        # proteção extra caso item não seja dict
+        if not isinstance(c, dict):
+            continue
         email_c = str(c.get("email", "")).strip()
         senha_c = str(c.get("senha", "")).strip()
         if usr.strip() == email_c and passw.strip() == senha_c:
