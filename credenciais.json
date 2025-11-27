@@ -1,4 +1,14 @@
-{
-  "email": "lucasdftrans2016@gmail.com",
-  "senha": "senha123"
-}
+[
+  {
+    "email": "lucasdftrans2016@gmail.com",
+    "senha": "senha123"
+  },
+  {
+    "email": "lucas.pinto@dbm.com.br",
+    "senha": "dbm123"
+  },
+  {
+    "email": "lucas.nsc.wk@gmail.com",
+    "senha": "wk123"
+  }
+]
